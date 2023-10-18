@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 mybatis에서 처리할 SQl문을 작성하는 문서입니다. -->
+<!DOCTYPE mapper PUBLIC "-//myabatis.org//DTD Mapper 3.0/EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="cinema">
+
+
+	<select id="getAllLoc" resultType = "cinemaVo">
+		select distinct(cn_loc) as cn_loc from cinema
+	</select>
+
+    <!-- 점주ID로 영화관정보 조회 -->
+   <select id="getCinemaByShId" parameterType="String" resultType="cinemaVo">
+      select * from cinema
+      where sh_id = #{sh_id}
+   </select>
+   
+     <!-- 윤강혁 -->
+	<select id="getCinemaByLoc" resultType = "cinemaVo" parameterType="String">
+      select * from cinema where cn_loc = #{cn_loc}
+   </select>
+   
+
+	<select id="getCinemaByCnId" resultType="cinemaVo" parameterType="String">
+		select * from cinema where cn_id = #{cn_id} 
+	</select> 
+	
+	<!-- 영화관 추가 -->
+	<insert id="insertCinema" parameterType="cinemaVo">
+		insert into cinema values(#{cn_id},#{sh_id},#{cn_loc},#{cn_nm},#{cn_addr},#{cn_tel},#{cn_map})
+	</insert>
+	
+	<!-- 영화관ID 최대값 조회 -->
+	<select id="getMaxid" resultType="String">
+		select nvl(max(cn_id),0) maxid from cinema
+	</select>
+	
+	<!-- 점주ID로 영화관ID 조회 -->
+	<select id="getCinemaId" parameterType="String" resultType="String">
+		select cn_id from ( select * from cinema where sh_id = #{data}) where rownum = 1
+	</select>
+	
+	<!-- 수지  -->
+	<!-- 영화과 map 조회 -->
+	<select id="selectMap" parameterType="String" resultType="cinemaVo">
+		select * from cinema where cn_nm = #{cn_nm}
+	</select>
+	
+	
+</mapper>
+

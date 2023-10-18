@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 mybatis에서 처리할 SQl문을 작성하는 문서입니다. -->
+<!DOCTYPE mapper PUBLIC "-//myabatis.org//DTD Mapper 3.0/EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="client">
+
+<!--  수지 -->
+<!-- 회원가입 아이디 중복 체크  -->
+	<select id="checkId" resultType="String" parameterType="String">
+		select c_id from client where c_id =#{data}
+	</select>
+
+<!-- 회원가입 insert -->
+	<insert id="insertClient" parameterType="clientVo">
+		insert into client(c_id, c_nm, c_pass, c_tel, c_email, c_bir, c_add, c_gend)
+					values(#{c_id},#{c_nm},#{c_pass},#{c_tel},#{c_email},#{c_bir},#{c_add},#{c_gend})
+	</insert>
+<!-- 로그인  -->
+	<select id="loginClient" parameterType="clientVo" resultType="int">
+		select count(*) from client where c_id =#{c_id} and c_pass = #{c_pass} and c_isdelete = 'N'
+	</select>
+	
+<!-- 마이페이지 회원정보 가져오기 -->
+	<select id="clientInfo" resultType="clientVo" parameterType="String">
+		select  c_id, c_nm, c_pass, c_tel, c_email, TO_CHAR(C_BIR, 'YYYY/MM/DD')AS C_BIR, c_add, c_gend from client where c_id = #{data} 
+	</select>
+
+<!-- 비밀번호 변경 (임시비밀번호)-->
+	<update id="updatePw" parameterType="ClientVo">
+		update client set c_pass = #{c_pass} where c_id = #{c_id} and c_isdelete = 'N'	
+	</update>
+	
+<!--비밀번호 찾기 아이디 이메일 검사   -->
+	<select id="findPass" resultType="int" parameterType="clientVo">
+		select count(*) from client where c_id =#{c_id} and c_email =#{c_email} and c_isdelete = 'N'
+	</select>
+	
+<!-- 아이디 찾기  -->
+	<select id="findId" resultType="int" parameterType="clientVo">
+		select count(*) from client where c_nm =#{c_nm} and c_email =#{c_email} and c_isdelete = 'N'
+	</select>
+	
+<!-- 아이디보내기  -->	
+	<select id="getIdBymail" resultType="String" parameterType="clientVo">
+		select c_id from client where c_nm =#{c_nm} and c_email =#{c_email} and c_isdelete = 'N'
+	</select>
+	
+   <!-- 은비  -->	
+   <!-- 가입된 고객목록 조회  -->	
+	<select id="getAllClient" resultType="clientVo">
+	select C_ID, C_NM, C_PASS, C_TEL, C_EMAIL, TO_CHAR(C_BIR, 'YYYY/MM/DD')AS C_BIR, C_ADD, C_GEND from client where C_ISDELETE = 'N'
+	 ORDER BY SUBSTR(C_ID, 2)
+	</select>
+
+	<!-- 고객 정보 삭제하기 공통 -->
+	<update id="deleteClient" parameterType="String">
+		 update client set C_ISDELETE='Y' where c_id = #{c_id}
+	</update>	
+
+   <!-- 고객정보 수정  공통-->	
+	<update id="updateClient" parameterType="clientVo">
+		update client set C_NM = #{c_nm}, C_PASS = #{c_pass},
+		C_TEL = #{c_tel}, C_EMAIL = #{c_email}, C_BIR = #{c_bir},  
+		C_ADD = #{c_add},C_GEND = #{c_gend}
+		where C_ID = #{c_id}
+	</update>
+	
+	
+   <!-- id 값을 받아서 회원 정보 조회하기 -->
+	<select id="getClientById" parameterType="string" resultType="clientVo">
+		select C_ID, C_NM, C_PASS, C_TEL, C_EMAIL, TO_CHAR(C_BIR, 'YYYY/MM/DD')AS C_BIR, C_ADD, C_GEND from client where c_id = #{c_id}
+	</select>
+	
+	
+
+
+</mapper>

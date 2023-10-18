@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 mybatis에서 처리할 SQl문을 작성하는 문서입니다. -->
+<!DOCTYPE mapper PUBLIC "-//myabatis.org//DTD Mapper 3.0/EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+
+<mapper namespace="theater">
+
+	<!-- 모든 상영관 조회 -->
+	<select id="getAllTheater" resultType="theaterVo">
+		select * from theater
+	</select>
+	
+	<!-- 점주ID로 상영관 조회 -->
+	<select id="getTheaterById" resultType="theaterVo" parameterType="String">
+		select * from theater th, cinema c where th.cn_id=c.cn_id and c.sh_id= #{sh_id} order by th.th_nm
+	</select>
+	
+	<!-- 상영관 추가 -->
+	<insert id="insertTheater" parameterType="theaterVo">
+		insert into theater values(#{th_id}, #{cn_id}, #{th_nm})
+	</insert>
+	
+	<!-- 상영관ID 최대값 조회 -->
+	<select id="getMaxThId" resultType="String">
+		select nvl(th_id,0) from theater where th_id = (select max(cast(th_id as int)) from theater)
+	</select>
+
+	<!-- 상영관명 최대값 조회 -->
+	<select id="getMaxThNm" resultType="int" parameterType="String">
+		select nvl(max(to_number(regexp_replace(th_nm, '[^0-9]', ''))), 0) as maxid from theater where cn_id = #{data}
+	</select>
+	
+	<!-- 선택한 상영관 삭제 -->
+	<delete id="deleteTheater" parameterType="String">
+		delete from theater where th_id = #{th_id}
+	</delete>
+	
+	<select id="getTheaterByThId" resultType="theaterVo" parameterType="String">
+		select * from theater where th_id = #{th_id}
+	</select>
+	
+	
+	
+</mapper>

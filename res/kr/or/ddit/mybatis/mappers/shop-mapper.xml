@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 mybatis에서 처리할 SQl문을 작성하는 문서입니다. -->
+<!DOCTYPE mapper PUBLIC "-//myabatis.org//DTD Mapper 3.0/EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="shop">
+
+   <!-- 점주 정보 추가하기 -->
+   <insert id="insertShop" parameterType="shopVo">
+      insert into shop
+      (sh_id, sh_pw, sh_nm, sh_bnum, sh_tel)
+      values(#{sh_id}, #{sh_pw}, #{sh_nm}, #{sh_bnum}, #{sh_tel})
+   </insert>
+
+    <!-- 점주 id 중복검사 -->
+   <select id="checkByShopId" parameterType="String"
+      resultType="String">
+      select sh_id from shop where sh_id=#{data}
+   </select>
+   
+   
+    <!-- 점주 정보 조회하기 -->
+   <select id="getAllShop" resultType="shciVo">
+      <!--select sh_id, sh_pw, sh_nm, sh_bnum, sh_tel from shop-->
+      SELECT shop.sh_id, shop.sh_pw, shop.sh_nm, shop.sh_bnum, shop.sh_tel, COALESCE(cinema.cn_nm, '없음') AS cn_nm
+	FROM shop
+	LEFT JOIN cinema ON shop.sh_id = cinema.sh_id
+	WHERE shop.SH_ISDELETE = 'N'
+   </select>
+
+
+     <!-- 점주 정보 수정하기 -->
+   <update id="updateShop" parameterType="shopVo">
+      update shop set sh_pw = #{sh_pw} , sh_nm = #{sh_nm} ,
+      sh_bnum = #{sh_bnum} ,
+      sh_tel = #{sh_tel} where sh_id = #{sh_id}
+   </update>
+   
+   
+   <!-- id 값을 받아서 점주 정보 조회하기 -->
+   <select id="getShopById" parameterType="string" resultType="shopVo">
+      select * from shop where sh_id = #{sh_id}
+   </select>
+
+
+     <!-- 점주 정보 삭제하기
+   <delete id="deleteShop" parameterType="String">
+      delete from shop where sh_id = #{sh_id}
+   </delete> -->
+      
+      
+   <!-- 점주 정보 삭제하기2 -->
+   <update id="deleteShop" parameterType="String">
+       update shop set SH_ISDELETE='Y' where sh_id=#{sh_id}
+   </update>   
+     
+    <!-- 점주 로그인 -->
+    <select id="loginShop" parameterType="shopVo" resultType="int">
+    	select count(*) from shop where sh_id = #{sh_id} and sh_pw = #{sh_pw}
+    </select>
+     
+    
+</mapper>

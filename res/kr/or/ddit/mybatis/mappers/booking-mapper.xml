@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 mybatis에서 처리할 SQl문을 작성하는 문서입니다. -->
+<!DOCTYPE mapper PUBLIC "-//myabatis.org//DTD Mapper 3.0/EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="booking">
+	<select id="getTimeTableList" resultType = "timeTableVo" parameterType="bookingVo">
+		select t_num, th_id, to_char(t_date,'MM/DD') as t_date, t_time from timetable 
+		where t_num in 
+		(select t_num from screening where m_id = #{m_id} and t_num in  
+		(select t_num from timetable where th_id in 
+		(select th_id from theater where cn_id = #{cn_id})))
+	</select>
+	
+	<select id="getTimeTableDate" resultType = "timeTableVo" parameterType="bookingVo">
+		select distinct(to_char(t_date,'MM/DD')) as t_date from timetable 
+		where t_num in 
+		(select t_num from screening where m_id = #{m_id} and t_num in  
+		(select t_num from timetable where th_id in 
+		(select th_id from theater where cn_id =  #{cn_id})))
+	</select>
+		
+	<select id="getTimeTableTheater" resultType = "theaterVo" parameterType="bookingVo">
+	    select th_id, th_nm from theater where th_id in (select distinct(th_id) from timetable where t_num in 
+		(select t_num from screening where m_id = #{m_id}  and t_num in  
+		(select t_num from timetable where th_id in 
+		(select th_id from theater where cn_id = #{cn_id})))and to_char(t_date,'MM/DD') = #{t_date})
+	</select>
+	
+	
+	<select id="getTimeTableTime" resultType="timeTableVo" parameterType="bookingVo">
+	 select  th_id, t_time from timetable 
+		where t_num in 
+		(select t_num from screening where m_id = #{m_id}  and t_num in  
+		(select t_num from timetable where th_id in 
+		(select th_id from theater where cn_id = #{cn_id}))) and to_char(t_date,'MM/DD') = #{t_date}  and th_id = #{th_id}
+	</select>
+	
+	<select id="getTnum" resultType="int" parameterType="timeTableVo">
+		select t_num from timetable 
+		where th_id= #{th_id}
+		and  to_char(t_date,'MM/DD')= #{t_date}
+		and t_time = #{t_time}
+	</select>
+	
+	<select id="getSciNum" resultType ="int" parameterType="screeningVo">
+		select sci_num from screening where t_num = #{t_num} and m_id = #{m_id}
+	</select>
+	
+	<insert id="insertReservation" parameterType="reservationVo">
+	INSERT INTO reservation
+	VALUES (TO_CHAR(SYSDATE, 'YYYYMMDD') || LPAD(TO_CHAR(reservation_num_seq.nextval), 3, '0'), #{sci_num}, #{c_id})
+	</insert>
+	
+	<select id="getReId" resultType="String" parameterType="reservationVo">
+	select max(to_number(re_id)) as re_id from reservation where sci_num = #{sci_num} and c_id = #{c_id} 
+	</select>
+	
+	<insert id="insertSeatRsv" parameterType="seatRsvVo">
+	insert into seat_rsv values(SEAT_RSV_NUM_SEQ.nextval, #{re_id}, #{s_id})
+	</insert>
+	
+	<insert id="insertMoviePay" parameterType="moviePayVo">
+	insert into Movie_pay values
+	(movie_pay_num_seq.nextval,
+	 #{re_id}, 
+	 sysdate, 
+	 15000, 
+	 (15000*(select count(*) from seat_rsv where re_id = #{re_id})), 
+	 (select count(*) from seat_rsv where re_id = #{re_id}))
+	</insert>
+	
+	<select id="getCinemaNameByThId" parameterType = "String" resultType="String">
+	select Cn_nm from cinema where cn_id = (select CN_id from theater where th_id = #{th_id})
+	</select>
+	
+	<select id="getMpNumByReId" parameterType="String" resultType="int">
+	select mp_num from movie_pay where re_id = #{re_id}
+	</select>
+	
+	<update id="updateSeatOk" parameterType ="int">
+	update seat set s_ok = 'Y' where s_id = #{s_id}
+	</update>
+	
+	<select id="showReservationByCId" parameterType="String" resultType="showReservationVo">
+	select r.re_id, mv.m_subject, c.cn_nm, th.th_nm, to_char(t.t_date,'MM/DD') as t_date, t.t_time, mp.mp_total
+	    from reservation r
+	    join movie_pay mp on r.re_id = mp.re_id
+	    join screening sc on sc.sci_num = r.sci_num
+	    join movie mv on mv.m_id = sc.m_id
+	    join timetable t on t.t_num = sc.t_num
+	    join theater th on th.th_id = t.th_id
+	    join cinema c on c.cn_id = th.cn_id
+	where
+    	r.c_id = #{c_id}
+	order by
+	    r.re_id
+	    
+	
+	</select>
+</mapper>

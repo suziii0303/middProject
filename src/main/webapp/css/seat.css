@@ -1,0 +1,156 @@
+   div.seatRow {
+            position: relative;
+        }
+
+        div.seatRow button {
+            cursor: pointer;
+            background-color: lightgray;
+            position: absolute;
+            padding: 2px;
+            width: 25px;
+            height: 25px;
+        }
+
+         div.seatRow button:hover {
+            background-color: #D51619;
+        } 
+
+        button {
+            cursor: pointer;
+        }
+
+        div.seatRow button.represent {
+            background-color: lightgray;
+        }
+
+        li.theaterInfo {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+		span#s1{
+			color : darkgray;
+		}
+		span#s2{
+			color : lightgray;
+		}
+		span#s3{
+			color : #D51619;
+		}
+        button.selectedSeat {
+            margin: 5px;
+            float: left;
+            width: 50px;
+            height: 50px;
+        }
+
+        /* row button start */
+        button.row-A {
+            top: 140px;
+        }
+
+        button.row-B {
+            top: 170px;
+        }
+
+        button.row-C {
+            top: 200px;
+        }
+
+        button.row-D {
+            top: 230px;
+        }
+
+        button.row-E {
+            top: 260px;
+        }
+        button.row-F {
+            top: 380px;
+        }
+        button.row-G {
+            top: 410px;
+        }
+        button.row-H {
+            top: 440px;
+        }
+        button.row-I {
+            top: 470px;
+        }
+        button.row-J {
+            top: 500px;
+        }
+
+       /* col button start */
+        button.col-1 {
+            left: 70px;
+        }
+
+        button.col-2 {
+            left: 100px;
+        }
+
+        button.col-3 {
+            left: 170px;
+        }
+
+        button.col-4 {
+            left: 200px;
+        }
+
+        button.col-5 {
+            left: 230px;
+        }
+
+        button.col-6 {
+            left: 260px;
+        }
+
+        button.col-7 {
+            left: 290px;
+        }
+
+        button.col-8 {
+            left: 320px;
+        }
+
+        button.col-9 {
+            left: 350px;
+        }
+
+        button.col-10 {
+            left: 380px;
+        }
+
+        button.col-11 {
+            left: 410px;
+        }
+
+        button.col-12 {
+            left: 440px;
+        }
+
+        button.col-13 {
+            left: 510px;
+        }
+
+        button.col-14 {
+            left: 540px;
+        }
+
+
+        .movieInfo {
+            color: white;
+        }
+
+        button.decisionBtn:hover {
+            color: coral;
+        }
+
+        body {
+            margin-bottom: 500px;
+        }
+
+        div.selectType button {
+            outline: none;
+            cursor: pointer;
+            border: solid 1px gray;
+        }

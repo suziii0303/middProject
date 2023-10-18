@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 mybatis에서 처리할 SQl문을 작성하는 문서입니다. -->
+<!DOCTYPE mapper PUBLIC "-//myabatis.org//DTD Mapper 3.0/EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+
+<mapper namespace="timeTable">
+
+	
+	<!-- 영화 조회하기 누르면 한 영화에 대한 상세정보 볼 수 있는 메서드 -->
+	<select id="getMovie" resultType="timeTableVo" parameterType="String">
+		select MR_ID, MG_ID, M_SUBJCT, M_POST, M_DIRECTOR, TO_CHAR(M_DATE,'YY/MM/DD') as M_DATE, M_PLOT from movie
+			where M_ID = #{M_ID} 
+	
+	</select>
+	
+	<select id="getAllTimeTable" resultType="timeTableVo" parameterType="String">
+		select  t.*, t2.* ,  (select m_subject from movie m where m.m_id = (select m_id from screening s  where s.t_num = t2.t_num ) ) m_subject
+		from cinema c, theater t, timetable t2
+		where c.cn_id = t.cn_id
+    			and t2.th_id = t.th_id
+<!--     			and c.sh_id='daejeon' -->
+    			and c.sh_id=#{sh_id}
+		order by t2.th_id, t2.t_num
+	</select>
+	
+	<select id="getMovieTitle" resultType="timeTableVo" parameterType="String">
+		select m.m_subject
+		from movie m, screening s, timetable t
+	    where t.t_num=s.t_num and s.m_id=m.m_id and t.t_num= #{t_num}
+	</select>
+	
+	<delete id="deleteScreening" parameterType="String">
+		delete from screening where t_num in (
+        select t_num
+        from theater th, timetable t
+        where th.th_id = t.th_id and th.th_id = #{th_id}
+   		 )
+	</delete>
+
+	<delete id="deleteTimeTable" parameterType="String">
+		delete from timetable where th_id = #{th_id}
+	</delete>
+	
+	
+<!-- 상영관 만들어 질 때 자동으로 상영일정 만들어지게  t_num (시퀀스), th_id (상영관 값 받아서), t_date(상영날짜-5개), t_time(상영시간-8개) -->
+	<insert id="insertTimeTable" parameterType="timetableVo">
+		insert into timetable values(timetable_num_seq.nextval, #{th_id}, #{t_date}, #{t_time})
+	</insert>
+
+	
+</mapper>

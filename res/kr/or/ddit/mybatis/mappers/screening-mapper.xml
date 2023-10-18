@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 이 문서는 mybatis에서 처리할 SQl문을 작성하는 문서입니다. -->
+<!DOCTYPE mapper PUBLIC "-//myabatis.org//DTD Mapper 3.0/EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+
+<mapper namespace="screening">
+
+	<!-- 점주ID로 상영일정 조회 -->
+	<select id="getScreening" resultType="screeningVo" parameterType="String">
+		select
+	  t.*,
+	  t2.*,
+	  m.m_subject
+	from
+	  cinema c
+	  join theater t on c.cn_id = t.cn_id
+	  join timetable t2 on t2.th_id = t.th_id
+	  left join screening s on s.t_num = t2.t_num
+	  left join movie m on m.m_id = s.m_id
+	where
+	  c.sh_id = #{sh_id}
+	order by
+	  t2.th_id, t2.t_num
+	</select>
+	
+	<!-- 선택한 상영관의 상영일정 삭제 -->
+	<delete id="deleteScreening" parameterType="String">
+		delete from screening where t_num in (
+        select t_num
+        from theater th, timetable t
+        where th.th_id = t.th_id and th.th_id = #{th_id}
+   		 )
+	</delete>
+
+	<!-- 선택한 상영관의 타임테이블 삭제 -->
+	<delete id="deleteTimeTable" parameterType="String">
+		delete from timetable where th_id = #{th_id}
+	</delete>
+
+	<!-- 상영일정 추가 -->
+	<insert id="insertScreening" parameterType="screeningVo">
+		insert into screening values(#{sci_num},#{m_id},#{t_num})
+	</insert>
+	
+	<!-- 상영일정ID 최대값 조회 -->
+	<select id="getMaxSciNum" resultType="int">
+		select nvl(max(sci_num), 0) as maxid from screening
+	</select>
+	
+	<!-- 상영일정의 영화 삭제 -->
+	<delete id="deleteScreeningMovie" parameterType="String">
+		delete from screening where t_num=#{t_num}
+	</delete>
+	
+</mapper>
